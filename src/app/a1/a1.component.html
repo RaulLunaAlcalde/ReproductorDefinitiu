@@ -1,8 +1,26 @@
 <div>
+  <!-- Lista de videos -->
   <div *ngFor="let video of videos" class="video-item">
     <img [src]="video.thumbnail" alt="{{ video.title }}" />
     <h3>{{ video.title }}</h3>
-    <p>{{ video.description }}</p>
-    <button (click)="selectVideo(video.id)">Seleccionar</button>
+    <button (click)="selectVideo(video.id)">Generar código</button>
+  </div>
+
+  <!-- Ingreso de código -->
+  <div>
+    <input type="text" placeholder="Ingrese el código" #codeInput />
+    <button (click)="validateCode(codeInput.value)">Validar Código</button>
+  </div>
+
+  <!-- Reproductor de video -->
+  <div *ngIf="selectedVideoUrl">
+    <h2>Reproduciendo Video</h2>
+    <iframe
+      [src]="selectedVideoUrl | safeUrl"
+    width="560"
+    height="315"
+    frameborder="0"
+    allowfullscreen
+    ></iframe>
   </div>
 </div>

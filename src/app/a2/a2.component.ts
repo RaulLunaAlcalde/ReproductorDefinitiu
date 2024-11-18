@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import { SocketService } from '../socket.service';
 import {FormsModule} from '@angular/forms';
+import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-a2',
   standalone: true,
   imports: [
-    FormsModule
+    FormsModule,
+    NgIf
   ],
   templateUrl: './a2.component.html',
   styleUrl: './a2.component.css'
