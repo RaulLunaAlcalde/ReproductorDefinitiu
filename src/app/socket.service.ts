@@ -8,7 +8,9 @@ export class SocketService {
   private socket: Socket;
 
   constructor() {
-    this.socket = io('http://localhost:3000'); // Dirección del servidor
+    this.socket = io('http://localhost:3000', {
+      transports: ['websocket', 'polling'],
+    });
   }
 
   getVideos(callback: (videos: any[]) => void) {
@@ -21,8 +23,9 @@ export class SocketService {
     this.socket.on('generatedCode', callback);
   }
 
-  validateCode(code: string, callback: (response: any) => void) {
-    this.socket.emit('validateCode', code);
-    this.socket.on('codeValid', callback);
+  onPlayVideo(callback: (videoUrl: string) => void) {
+    this.socket.on('playVideo', (data: { videoUrl: string }) => {
+      callback(data.videoUrl);
+    });
   }
 }

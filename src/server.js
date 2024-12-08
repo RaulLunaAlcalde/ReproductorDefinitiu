@@ -1,20 +1,24 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const path = require('path');
 const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:4200',
+    origin: 'http://localhost:4200', // Asegúrate que la IP y el puerto sean correctos
     methods: ['GET', 'POST'],
   },
 });
 
+// Configuración para servir archivos estáticos (videos)
+app.use('/videos', express.static(path.join(__dirname, 'videos')));
+
 const videos = [
-  { id: 1, title: 'Explorando el Espacio', url: 'YcB2POYMfW8' }, // ID de YouTube
-  { id: 2, title: 'Cocinando con Estilo', url: '1adJvub3pJU' },  // ID de YouTube
+  { id: 1, title: '5 minute timer', url: 'http://localhost:3000/videos/5-Minute-Timer.mp4' },
+  { id: 2, title: '6 minute timer', url: 'http://localhost:3000/videos/6-Minute-Timer.mp4' },
 ];
 
 const videoCodes = new Map(); // Mapeo de códigos generados a videos
@@ -22,7 +26,7 @@ const videoCodes = new Map(); // Mapeo de códigos generados a videos
 io.on('connection', (socket) => {
   console.log('Un cliente conectado');
 
-  // Enviar lista de videos al cliente
+  // Enviar la lista de videos al cliente
   socket.on('getVideos', () => {
     socket.emit('videoList', videos);
   });
@@ -31,22 +35,28 @@ io.on('connection', (socket) => {
   socket.on('selectVideo', (videoId) => {
     const code = Math.random().toString(36).substr(2, 4).toUpperCase();
     videoCodes.set(code, videoId);
-    console.log(`Código generado para video ${videoId}: ${code}`);
+    console.log(`Código generado para el video ${videoId}: ${code}`);
     socket.emit('generatedCode', code);
   });
 
-  // Validar código
-  socket.on('validateCode', (code) => {
+  // Validar código desde A2
+  socket.on('validateCodeFromA2', (code) => {
     if (videoCodes.has(code)) {
       const videoId = videoCodes.get(code);
-      socket.emit('codeValid', { valid: true, videoId: videos.find(v => v.id === videoId).url });
+      const videoUrl = videos.find((v) => v.id === videoId).url;
+
+      // Notificar al cliente A2 que el código es válido
+      socket.emit('codeValid', { valid: true, videoUrl });
+
+      // Notificar a todos los clientes A1 para reproducir el video
+      io.emit('playVideo', { videoUrl });
     } else {
       socket.emit('codeValid', { valid: false });
     }
   });
 });
 
-// Iniciar servidor en puerto 3000
+// Iniciar servidor en el puerto 3000
 server.listen(3000, () => {
   console.log('Servidor escuchando en http://localhost:3000');
 });

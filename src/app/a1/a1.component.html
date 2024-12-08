@@ -1,6 +1,16 @@
 <div *ngFor="let video of videos" class="video-item">
-  <img ngSrc="video.thumbnail" alt="{{ video.title }}" />
+  <img [src]="video.thumbnail" alt="{{ video.title }}" />
   <h3>{{ video.title }}</h3>
   <p>{{ video.description }}</p>
-  <button (click)="selectVideo(video.id)">Seleccionar</button>
+  <button (click)="generateCode(video.id)">Generar Codi</button>
+</div>
+
+<div *ngIf="generatedCode" class="generated-code">
+  <h3>Codi Generat:</h3>
+  <p>{{ generatedCode }}</p>
+</div>
+
+<div *ngIf="currentVideoUrl" class="video-player">
+  <h3>Reproduint Vídeo</h3>
+  <video [src]="currentVideoUrl" controls autoplay></video>
 </div>
