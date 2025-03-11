@@ -15,7 +15,7 @@ import {FormsModule} from '@angular/forms';
 export class RegisterComponent {
   email: string = '';
   password: string = '';
-  isPremium: boolean = false; // Nuevo campo
+  isPremium: boolean = false;
   message: string = '';
 
   constructor(private router: Router) {}
@@ -23,13 +23,11 @@ export class RegisterComponent {
   register() {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
 
-    // Verifica si el usuario ya existe
     if (users.some((u: any) => u.email === this.email)) {
       this.message = 'Este correo ya está registrado.';
       return;
     }
 
-    // Guarda el usuario en localStorage con el campo premium
     users.push({ email: this.email, password: this.password, isPremium: this.isPremium });
     localStorage.setItem('users', JSON.stringify(users));
 

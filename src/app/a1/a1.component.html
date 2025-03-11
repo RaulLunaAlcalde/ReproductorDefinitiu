@@ -1,16 +1,19 @@
-<h2>Bienvenido, {{ user?.email }}</h2>
-<p *ngIf="user?.isPremium" class="premium">Eres usuario Premium 🏆</p>
-<p *ngIf="!user?.isPremium" class="standard">Eres usuario estándar</p>
+<div *ngFor="let video of videos" class="video-item">
+  <img [src]="video.thumbnail" alt="{{ video.title }}" />
+  <h3>{{ video.title }}</h3>
+  <p>{{ video.description }}</p>
 
-<button (click)="logout()" class="logout-btn">Cerrar sesión</button>
+  <button *ngIf="user?.isPremium" (click)="generateCode(video.id)">
+    Generar Código (Premium)
+  </button>
 
-<div class="video-list">
-  <div *ngFor="let video of videos" class="video-item">
-    <img [src]="video.thumbnail" alt="{{ video.title }}" />
-    <h3>{{ video.title }}</h3>
-    <p>{{ video.description }}</p>
-    <button (click)="generateCode(video.id)">Generar Código</button>
-  </div>
+  <p *ngIf="!user?.isPremium && video.premiumOnly" class="premium-alert">
+    Este video es solo para usuarios Premium
+  </p>
+
+  <button *ngIf="!user?.isPremium && video.premiumOnly" (click)="upgrade()">
+    Mejora a Premium
+  </button>
 </div>
 
 <div *ngIf="generatedCode" class="generated-code">
@@ -19,6 +22,6 @@
 </div>
 
 <div *ngIf="currentVideoUrl" class="video-player">
-  <h3>Reproduciendo Vídeo</h3>
+  <h3>Reproduciendo Video</h3>
   <video [src]="currentVideoUrl" controls autoplay></video>
 </div>

@@ -18,7 +18,7 @@ export class VideoListComponent implements OnInit {
   generatedCode: string | null = null;
   currentVideoUrl: string | null = null;
   user: any = null;
-  private secretKey = 'mi_clave_secreta'; // 🔑 Clave secreta para verificar el token
+  private secretKey = 'mi_clave_secreta';
 
   constructor(private socketService: SocketService, private router: Router) {}
 
@@ -27,7 +27,12 @@ export class VideoListComponent implements OnInit {
       this.loadUserFromToken();
 
       this.socketService.getVideos((videos) => {
-        this.videos = videos;
+
+        if (!this.user.isPremium) {
+          this.videos = videos.filter(video => !video.premiumOnly);
+        } else {
+          this.videos = videos;
+        }
       });
 
       this.socketService.onPlayVideo((videoUrl) => {
@@ -35,19 +40,24 @@ export class VideoListComponent implements OnInit {
       });
     } else {
       alert('Sesión expirada o token inválido. Inicia sesión nuevamente.');
-      this.router.navigate(['/login']);
+      this.logout();
     }
   }
 
   generateCode(videoId: number) {
     if (this.validateToken()) {
+      if (!this.user.isPremium) {
+        alert('Solo los usuarios Premium pueden generar un código de video.');
+        return;
+      }
+
       this.socketService.selectVideo(videoId, (code) => {
         this.generatedCode = code;
         alert(`Código generado para el video ${videoId}: ${code}`);
       });
     } else {
       alert('El token ha sido modificado o es inválido. Cerrando sesión...');
-      this.logout(); // Cerrar sesión si el token es inválido
+      this.logout();
     }
   }
 
@@ -68,14 +78,14 @@ export class VideoListComponent implements OnInit {
 
     try {
       const [data, signature] = atob(token).split('.');
-      if (signature !== this.secretKey) return false; // ❌ Token manipulado
+      if (signature !== this.secretKey) return false;
 
       const tokenData = JSON.parse(data);
-      if (Date.now() > tokenData.exp) return false; // ❌ Token caducado
+      if (Date.now() > tokenData.exp) return false;
 
-      return true; // ✅ Token válido
+      return true;
     } catch (error) {
-      return false; // ❌ Token corrupto
+      return false;
     }
   }
 
@@ -83,4 +93,8 @@ export class VideoListComponent implements OnInit {
     localStorage.removeItem('token');
     this.router.navigate(['/login']);
   }
+  upgrade() {
+    this.router.navigate(['/upgrade']);
+  }
+
 }

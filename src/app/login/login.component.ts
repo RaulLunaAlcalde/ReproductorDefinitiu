@@ -16,7 +16,7 @@ export class LoginComponent {
   email: string = '';
   password: string = '';
   message: string = '';
-  private secretKey = 'mi_clave_secreta'; // 🔑 Clave secreta para firmar el token
+  private secretKey = 'mi_clave_secreta';
 
   constructor(private router: Router) {}
 
@@ -27,19 +27,17 @@ export class LoginComponent {
     if (user) {
       this.message = user.isPremium ? 'Inicio de sesión exitoso (Premium)' : 'Inicio de sesión exitoso';
 
-      // 📌 Crear un token con firma y expiración
+
       const tokenData = {
         email: user.email,
         isPremium: user.isPremium,
-        exp: Date.now() + 15 * 60 * 1000 // 🔥 Expira en 15 minutos
+        exp: Date.now() + 15 * 60 * 1000
       };
 
       const token = btoa(JSON.stringify(tokenData) + '.' + this.secretKey);
 
-      // Guardar el token en localStorage
       localStorage.setItem('token', token);
 
-      // Redirigir a la página de home inmediatamente
       this.router.navigate(['/home']);
     } else {
       this.message = 'Correo o contraseña incorrectos';
