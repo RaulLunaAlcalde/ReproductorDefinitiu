@@ -21,17 +21,17 @@ const videos = [
   { id: 2, title: '6 minute timer', url: 'http://localhost:3000/videos/6-Minute-Timer.mp4' },
 ];
 
-const videoCodes = new Map(); // Mapeo de códigos generados a videos
+const videoCodes = new Map();
 
 io.on('connection', (socket) => {
   console.log('Un cliente conectado');
 
-  // Enviar la lista de videos al cliente
+
   socket.on('getVideos', () => {
     socket.emit('videoList', videos);
   });
 
-  // Generar código para un video
+
   socket.on('selectVideo', (videoId) => {
     const code = Math.random().toString(36).substr(2, 4).toUpperCase();
     videoCodes.set(code, videoId);
@@ -39,16 +39,16 @@ io.on('connection', (socket) => {
     socket.emit('generatedCode', code);
   });
 
-  // Validar código desde A2
+
   socket.on('validateCodeFromA2', (code) => {
     if (videoCodes.has(code)) {
       const videoId = videoCodes.get(code);
       const videoUrl = videos.find((v) => v.id === videoId).url;
 
-      // Notificar al cliente A2 que el código es válido
+
       socket.emit('codeValid', { valid: true, videoUrl });
 
-      // Notificar a todos los clientes A1 para reproducir el video
+
       io.emit('playVideo', { videoUrl });
     } else {
       socket.emit('codeValid', { valid: false });
