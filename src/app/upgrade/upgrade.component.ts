@@ -3,13 +3,12 @@ import { Router } from '@angular/router';
 import {NgIf} from '@angular/common';
 
 @Component({
-  selector: 'app-upgrade',
-  templateUrl: './upgrade.component.html',
-  styleUrls: ['./upgrade.component.css'],
-  imports: [
-    NgIf
-  ],
-  standalone: true
+    selector: 'app-upgrade',
+    templateUrl: './upgrade.component.html',
+    styleUrls: ['./upgrade.component.css'],
+    imports: [
+        NgIf
+    ]
 })
 export class UpgradeComponent {
   message: string = '';

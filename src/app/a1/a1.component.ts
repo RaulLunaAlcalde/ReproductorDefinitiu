@@ -4,14 +4,13 @@ import { NgForOf, NgIf } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-a1',
-  templateUrl: './a1.component.html',
-  styleUrls: ['./a1.component.css'],
-  imports: [
-    NgIf,
-    NgForOf
-  ],
-  standalone: true
+    selector: 'app-a1',
+    templateUrl: './a1.component.html',
+    styleUrls: ['./a1.component.css'],
+    imports: [
+        NgIf,
+        NgForOf
+    ]
 })
 export class VideoListComponent implements OnInit {
   videos: any[] = [];
